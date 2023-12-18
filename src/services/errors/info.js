@@ -49,3 +49,7 @@ export const ownerProductError = (pid) => {
 export const notFoundUserError = () => {
   return 'No existe el usuario con ese id';
 };
+
+export const ChangeRolError = () => {
+  return 'No se puede cambiar el rol del usuario debido a que faltan documentos por cargar';
+};

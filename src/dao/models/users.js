@@ -9,7 +9,22 @@ const userSchema = new mongoose.Schema({
   age: { type: Number, required: true },
   password: { type: String, required: true },
   role: { type: String, required: true, default: 'user' },
-  cart: { type: mongoose.Schema.Types.ObjectId, ref: 'carts' }
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: 'carts' },
+  documents: {
+    type: [
+      {
+        name: {
+          type: String
+        },
+        reference: {
+          type: String
+        }
+      }
+    ],
+    default: []
+  },
+  status: { type: Boolean, required: true, default: false },
+  last_connection: { type: Date, default: Date.now() }
 });
 
 userSchema.pre('find', function (next) {

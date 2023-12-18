@@ -1,5 +1,5 @@
 import { Products } from '../dao/factory.js';
-import __dirname, { passportCall, uploader } from '../utils.js';
+import __dirname, { passportCall, upload } from '../utils.js';
 import path from 'path';
 import CustomError from '../services/errors/CustomError.js';
 import EErrors from '../services/errors/enums.js';
@@ -17,7 +17,7 @@ export const passportAdmin = passportCall('admin');
 
 export const passportPremium = passportCall('premium');
 
-export const uploaderProduct = uploader.array('thumbnails');
+export const uploaderProduct = upload.array('thumbnails');
 
 export const getProducts = async (req, res, next) => {
   const limit = req.query.limit;
@@ -77,7 +77,7 @@ export const addProduct = async (req, res, next) => {
 
   if (req.files) {
     thumbnails = req.files.map((file) => {
-      return path.join(__dirname, '/public/img/', file.filename);
+      return path.join(__dirname, '/public/products/', file.filename);
     });
   }
   if (req.session.user.role === 'premium') {
@@ -87,10 +87,10 @@ export const addProduct = async (req, res, next) => {
   if (
     typeof title === 'string' &&
     typeof description === 'string' &&
-    typeof price === 'number' &&
+    typeof +price === 'number' &&
     price >= 0 &&
     typeof code === 'string' &&
-    typeof stock === 'number' &&
+    typeof +stock === 'number' &&
     stock >= 0 &&
     typeof category === 'string'
   ) {

@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { changeRole, deleteUser } from '../controllers/users.js';
+import { addDocuments, changeRole, deleteUser, uploaderDocuments } from '../controllers/users.js';
 
 const router = Router();
 
 router.get('/premium/:uid', changeRole);
 
 router.delete('/:uid', deleteUser);
+
+router.post('/:uid/documents', uploaderDocuments, addDocuments);
 
 export default router;

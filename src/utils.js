@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, { dirname } from 'path';
 import multer from 'multer';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -13,21 +13,76 @@ const __dirname = dirname(__fileName);
 const PRIVATE_KEY = config.passportSecret;
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${__dirname}/public/img`);
+  destination: function (req, file, cb) {
+    let uploadPath = '';
+
+    if (file.fieldname === 'profileImage') {
+      uploadPath = `${__dirname}/public/profiles`;
+    } else if (file.fieldname === 'thumbnails') {
+      uploadPath = `${__dirname}/public/products`;
+    } else {
+      uploadPath = `${__dirname}/public/documents`;
+    }
+
+    cb(null, uploadPath);
   },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 
-export const uploader = multer({
-  storage,
-  onError: function (err, next) {
-    console.error(err);
-    next();
-  }
-});
+export const upload = multer({ storage });
+
+// const documentStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, `${__dirname}/public/documents`);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   }
+// });
+
+// const profileStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, `${__dirname}/public/profiles`);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   }
+// });
+
+// const productStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, `${__dirname}/public/products`);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   }
+// });
+
+// export const documentUploader = multer({
+//   documentStorage,
+//   onError: function (err, next) {
+//     console.error(err);
+//     next();
+//   }
+// });
+
+// export const profileUploader = multer({
+//   profileStorage,
+//   onError: function (err, next) {
+//     console.error(err);
+//     next();
+//   }
+// });
+
+// export const productUploader = multer({
+//   productStorage,
+//   onError: function (err, next) {
+//     console.error(err);
+//     next();
+//   }
+// });
 
 export const createHash = (password) =>
   bcrypt.hashSync(password.toString(), bcrypt.genSaltSync(10));

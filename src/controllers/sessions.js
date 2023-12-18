@@ -44,6 +44,11 @@ export const login = async (req, res) => {
       cart: '64fda47eecb725fd4fc1639a'
     };
     const token = generateToken(req.session.user);
+    await usersModel.findOneAndUpdate(
+      { email: req.user.email },
+      { $set: { last_connection: new Date() } },
+      { new: true }
+    );
     res
       .cookie('coderCookie', token, {
         httpOnly: true
@@ -51,6 +56,7 @@ export const login = async (req, res) => {
       .send({ status: 'success', payload: req.session.user });
   } else {
     req.session.user = {
+      id: req.user._id,
       name: `${req.user.first_name} ${req.user.last_name}`,
       email: req.user.email,
       age: req.user.age,
@@ -58,6 +64,11 @@ export const login = async (req, res) => {
       cart: req.user.cart
     };
     const token = generateToken(req.session.user);
+    await usersModel.findOneAndUpdate(
+      { email: req.user.email },
+      { $set: { last_connection: new Date() } },
+      { new: true }
+    );
     res
       .cookie('coderCookie', token, {
         httpOnly: true
@@ -83,7 +94,12 @@ export const failRegister = (req, res) => {
     });
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  await usersModel.findOneAndUpdate(
+    { email: req.session.user.email },
+    { $set: { last_connection: new Date() } },
+    { new: true }
+  );
   req.session.destroy((err) => {
     if (err) {
       console.error('Error al destruir la sesión:', err);
